@@ -47,6 +47,11 @@ class MyInterpreter:
 
     def LFI(self, x):
 
+        try:
+            x = self.ensemble.minmax_scaler.transform(x)
+        except:
+            pass
+
         start_time = time.time()
         FI = 0
         for h, forest in enumerate(self.ensemble.iForest_lst):
@@ -221,28 +226,28 @@ class MyInterpreter:
                         if left_data.shape[0] == 0 or right_data.shape[0] == 0:
                             continue
 
-                        # Compute pairwise Euclidean distances
+                        # 1. Compute pairwise Euclidean distances
                         distances = sklearn.metrics.pairwise.euclidean_distances(left_data, right_data)
 
-                        # Find nearest neighbors
+                        # 2. Find nearest neighbors
                         left_nn_index = np.argmin(distances, axis=1)   # nearest right neighbor for each left point
                         right_nn_index = np.argmin(distances, axis=0)  # nearest left neighbor for each right point
 
-                        # Compute difference vectors to nearest neighbors
-                        left_d = left_data - right_data[left_nn_index]  
-                        right_d = right_data - left_data[right_nn_index] 
+                        # 3. Compute difference vectors to nearest neighbors
+                        left_d = left_data - right_data[left_nn_index]   # shape: (n_left, n_features)
+                        right_d = right_data - left_data[right_nn_index] # shape: (n_right, n_features)
 
-                        # Stack all difference vectors
-                        d = np.vstack((left_d, right_d))
+                        # 4. Stack all difference vectors
+                        d = np.vstack((left_d, right_d))  # shape: (n_left + n_right, n_features)
 
-                        # Normalize each difference vector (to unit length) and take absolute values
-                        norms = np.linalg.norm(d, axis=1, keepdims=True) 
+                        # 5. Normalize each difference vector (to unit length) and take absolute values
+                        norms = np.linalg.norm(d, axis=1, keepdims=True)  # avoid division by zero
                         d_normalized = np.abs(d) / norms
 
-                        # Aggregate normalized vectors into a single vector
+                        # 6. Aggregate normalized vectors into a single vector
                         v_sum = np.sum(d_normalized, axis=0)
 
-                        # Normalize the final vector to unit length
+                        # 7. Normalize the final vector to unit length
                         v = v_sum / np.linalg.norm(v_sum)
 
                         i_left = v * n_node_samples[node] / n_node_samples[children_left[node]]
@@ -297,9 +302,11 @@ class MyInterpreter:
                             continue
 
                         # Compute all pairwise differences between left and right samples
+                        # Shape: (n_left, n_right, n_features)
                         diffs = left_data[:, np.newaxis, :] - right_data[np.newaxis, :, :]
 
                         # Compute squared differences and normalize by squared norms
+                        # Avoid division by zero by adding a tiny epsilon
                         norms = np.linalg.norm(diffs, axis=2, keepdims=True)**2
                         d = np.abs(diffs) / norms
 
