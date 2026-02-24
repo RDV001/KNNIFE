@@ -32,6 +32,10 @@ balif_large_datasets_names = [
     "mammography",
 ]
 
+tep_datasets_names = [
+    f"TEP_{i+1}" for i in range(20)
+]
+
 csv_added_datasets_names = [
     "bisect", 
     "bisect3d",
@@ -43,9 +47,10 @@ csv_added_datasets_names = [
     "glass",
 ]
 
+industrial_datasets_names = tep_datasets_names + ["secom"]
 mat_datasets_names = balif_small_datasets_names + balif_medium_datasets_names + balif_large_datasets_names
-csv_datasets_names = csv_added_datasets_names
-datasets_names = mat_datasets_names + csv_datasets_names
+csv_datasets_names = csv_added_datasets_names + industrial_datasets_names
+datasets_names = mat_datasets_names + csv_datasets_names + industrial_datasets_names
 
 def load(dataset_name=None, scale=None, af_num=None, rf_idx=None, eps=1.0, seed=None):
 

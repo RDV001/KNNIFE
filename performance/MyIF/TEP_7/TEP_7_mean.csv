@@ -1,0 +1,8 @@
+,0
+roc_auc,0.9017401523809523
+average_precision,0.6862717250175562
+accuracy,0.968635616438356
+precision,0.6184
+f1,0.6184
+detected_anomalies,1500.0
+fit_time,1.3998737573623656
