@@ -135,8 +135,8 @@ class MyEIF(DIF):
             device='cpu'
         )
 
-        # self.m = (max_samples - 1)*n_estimators
-        self.m = max_samples - 1
+        self.m = (max_samples - 1)*n_estimators
+        # self.m = max_samples - 1
         self.fit_time = None
 
     def fit(self, X):
